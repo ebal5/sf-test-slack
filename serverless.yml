@@ -1,0 +1,31 @@
+service: serverless-bolt-js
+frameworkVersion: '3'
+
+useDotenv: true
+
+plugins:
+  - serverless-offline
+provider:
+  name: aws
+  runtime: nodejs16.x
+  environment:
+    SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
+    SLACK_BOT_TOKEN: ${env:SLACK_BOT_TOKEN}
+    SLACK_CLIENT_ID: ${env:SLACK_CLIENT_ID}
+    SLACK_CLIENT_SECRET: ${env:SLACK_CLIENT_SECRET}
+functions:
+  slack:
+    handler: dist/index.handler
+    events:
+      - http:
+          path: slack/events
+          method: post
+      - http:
+          path: slack/interactive-endpoint
+          method: post
+      - http:
+          path: slack/oauth_redirect
+          method: get
+      - http:
+          path: slack/install
+          method: get
