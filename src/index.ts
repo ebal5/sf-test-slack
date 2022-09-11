@@ -11,6 +11,9 @@ const awsLambdaReceiver = new AwsLambdaReceiver({
   signingSecret: process.env.SLACK_SIGNING_SECRET!,
 });
 
+// TODO: Installer は別のfunctionにしてしまう必要がある
+// TODO: DynamoDBに秘密情報保存
+
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   receiver: awsLambdaReceiver,
