@@ -7,6 +7,7 @@ const app = express();
 const installer = new InstallProvider({
   clientId: process.env.SLACK_CLIENT_ID!,
   clientSecret: process.env.SLACK_CLIENT_SECRET!,
+  stateVerification: false,
   stateSecret: "TEST_STATE_SECRET",
 });
 
