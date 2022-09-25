@@ -1,50 +1,15 @@
 import { App, AwsLambdaReceiver } from "@slack/bolt";
-import { InstallProvider } from "@slack/oauth";
-
-const installer = new InstallProvider({
-  clientId: process.env.SLACK_CLIENT_ID!,
-  clientSecret: process.env.SLACK_CLIENT_SECRET!,
-  stateSecret: "TEST_STATE_SECRET",
-});
 
 const awsLambdaReceiver = new AwsLambdaReceiver({
   signingSecret: process.env.SLACK_SIGNING_SECRET!,
 });
 
-// TODO: Installer は別のfunctionにしてしまう必要がある
 // TODO: DynamoDBに秘密情報保存
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   receiver: awsLambdaReceiver,
   processBeforeResponse: true,
-  customRoutes: [
-    {
-      path: "/slack/install",
-      method: ["GET"],
-      handler: async (req, res) => {
-        await installer.handleInstallPath(req, res, {}, {
-          scopes: [
-            "app_mentions:read",
-            "channels:history",
-            "chat:write",
-            "channels:read",
-            "groups:history",
-            "groups:write",
-            "users.profile:read",
-          ],
-          userScopes: [],
-        });
-      },
-    },
-    {
-      path: "/slack/oauth_redirect",
-      method: ["GET"],
-      handler: async (req, res) => {
-        await installer.handleCallback(req, res)
-      },
-    }
-  ],
 });
 
 app.message("hello", async ({ message, say }) => {

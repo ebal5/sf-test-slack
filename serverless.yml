@@ -16,7 +16,7 @@ provider:
     SLACK_CLIENT_ID: ${env:SLACK_CLIENT_ID}
     SLACK_CLIENT_SECRET: ${env:SLACK_CLIENT_SECRET}
 functions:
-  slack:
+  ordinary:
     handler: dist/index.handler
     events:
       - http:
@@ -25,6 +25,9 @@ functions:
       - http:
           path: slack/interactive-endpoint
           method: post
+  installation:
+    handler: dist/installation.handler
+    events:
       - http:
           path: slack/oauth_redirect
           method: get
