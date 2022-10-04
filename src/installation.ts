@@ -20,6 +20,7 @@ const installer = new InstallProvider({
   clientSecret: process.env.SLACK_CLIENT_SECRET!,
   authVersion: 'v2',
   stateSecret: "TEST_STATE_SECRET",
+  directInstall: true,
 });
 
 app.get('/slack/oauth_redirect', async (req, res) => {
