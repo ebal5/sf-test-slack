@@ -18,19 +18,7 @@ provider:
 functions:
   ordinary:
     handler: dist/index.handler
-    events:
-      - http:
-          path: slack/events
-          method: post
-      - http:
-          path: slack/interactive-endpoint
-          method: post
+    url: true
   installation:
     handler: dist/installation.handler
-    events:
-      - http:
-          path: slack/oauth_redirect
-          method: get
-      - http:
-          path: slack/install
-          method: get
+    url: true
