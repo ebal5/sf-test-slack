@@ -22,3 +22,23 @@ functions:
   installation:
     handler: dist/installation.handler
     url: true
+
+resources:
+  Resources:
+    slackTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        TableName: slackTable
+        AttributeDefinitions:
+          - AttributeName: installation
+            AttributeType: S
+          - AttributeName: teamId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: teamId
+            KeyType: HASH
+          - AttributeName: installation
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1

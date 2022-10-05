@@ -1,4 +1,5 @@
-import { App, AwsLambdaReceiver } from "@slack/bolt";
+import { App, AwsLambdaReceiver, Installation } from "@slack/bolt";
+import { DynamoDB } from "aws-sdk";
 
 const awsLambdaReceiver = new AwsLambdaReceiver({
   signingSecret: process.env.SLACK_SIGNING_SECRET!,
@@ -6,8 +7,29 @@ const awsLambdaReceiver = new AwsLambdaReceiver({
 
 // TODO: DynamoDBに秘密情報保存
 
+const dynamoClient = new DynamoDB.DocumentClient();
+
+const authorizeFn = async ({teamId, enterpriseId}) => {
+  return dynamoClient.get({
+    TableName: 'slackTable',
+    Key: {
+      teamId: teamId
+    }
+  }).promise()
+  .then((result) => {
+    const installation:Installation = result.Item.installation as Installation;
+    return {
+      botToken: installation.bot.token,
+      botId: installation.bot.id,
+      botUserId: installation.bot.userId,
+    };
+  }).catch((err) => {
+    throw new Error(err);
+  });
+}
+
 const app = new App({
-  token: process.env.SLACK_BOT_TOKEN,
+  authorize: authorizeFn,
   receiver: awsLambdaReceiver,
   processBeforeResponse: true,
 });

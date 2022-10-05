@@ -1,4 +1,5 @@
 import { InstallProvider } from "@slack/oauth";
+import { DynamoDB } from "aws-sdk";
 import express from "express";
 import serverless from 'serverless-http';
 
@@ -15,12 +16,35 @@ const scopes = [
 ];
 const userScopes = [];
 
+const dynamoClient = new DynamoDB.DocumentClient();
+
 const installer = new InstallProvider({
   clientId: process.env.SLACK_CLIENT_ID!,
   clientSecret: process.env.SLACK_CLIENT_SECRET!,
   authVersion: 'v2',
   stateSecret: "TEST_STATE_SECRET",
   directInstall: true,
+  installationStore: {
+    storeInstallation: async (installation, logger) => {
+      dynamoClient.put({
+        TableName: "slackTable",
+        Item: {
+          installation: installation,
+          token: installation.bot.token
+        }
+      });
+    },
+    fetchInstallation: async (query, logger) => {
+      return dynamoClient.get({
+        TableName: 'slackTable',
+        Key: {
+          teamId: query.teamId
+        }
+      }).promise()
+      .then(result => result.Item.installation)
+      .catch(_ => {throw new Error('test')});
+    },
+  }
 });
 
 app.get('/slack/oauth_redirect', async (req, res) => {
