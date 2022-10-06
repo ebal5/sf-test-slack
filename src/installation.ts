@@ -26,16 +26,18 @@ const installer = new InstallProvider({
   directInstall: true,
   installationStore: {
     storeInstallation: async (installation, logger) => {
-      dynamoClient.put({
+      logger.info('save installation', {installation});
+      await dynamoClient.put({
         TableName: "slackTable",
         Item: {
           installation: installation,
-          token: installation.bot.token
+          teamId: installation.team.id,
         }
-      });
+      }).promise();
     },
     fetchInstallation: async (query, logger) => {
-      return dynamoClient.get({
+      logger.info('fetch', {query});
+      return await dynamoClient.get({
         TableName: 'slackTable',
         Key: {
           teamId: query.teamId

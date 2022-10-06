@@ -28,8 +28,16 @@ const authorizeFn = async ({teamId, enterpriseId}) => {
   });
 }
 
+const staticAuth = async ({teamId, enterpriseId}) => {
+  return {
+    botToken: process.env.SLACK_BOT_TOKEN,
+    botId: 'xxxx',
+    botUserId: 'xxxx',
+  }
+}
+
 const app = new App({
-  authorize: authorizeFn,
+  authorize: staticAuth,
   receiver: awsLambdaReceiver,
   processBeforeResponse: true,
 });
